@@ -1,0 +1,50 @@
+* {
+    color: #eee;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 10vh;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+body {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    height: 100svh;
+    overflow: hidden;
+    background-color: #333;
+}
+
+textarea,
+#highlight {
+    grid-row: 1 / span 1;
+    grid-column: 1 / span 1;
+    margin: 5px;
+    resize: none;
+    background-color: transparent;
+    border: 1px solid #AAA;
+    border-radius: 0;
+    padding: 1vh;
+    overflow-y: auto;
+}
+
+#highlight {
+    background-color: #444;
+}
+
+#highlight,
+#highlight *{
+    color: transparent;
+    pointer-events: none;
+    user-select: none;
+}
+
+#result {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.highlight{
+    background-color: #AAA;
+    border-radius: 3vh;
+}
