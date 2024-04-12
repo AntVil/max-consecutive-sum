@@ -25,9 +25,7 @@ function update(textArea) {
 
 function extractData(rawText) {
     let cleanText = "";
-
     let numbers = [];
-
     let numberString = "";
 
     for (let char of rawText) {
@@ -125,53 +123,36 @@ function clearHighlight() {
 function updateHighlight(highlight, cleanText, index1, index2) {
     let preContent = document.createElement("span");
     let highlightContent = document.createElement("span");
-    let postContent = document.createElement("span");
 
-    highlightContent.classList.add("highlight");
+    highlightContent.classList.add("highlight-content");
 
     let index = 0;
-    let encounteredSpace = true;
-    let encounteredMinus = false;
+    let outsideNumber = true;
 
-    let modifyingElement;
-    if (index1 === 0) {
-        modifyingElement = highlightContent;
-    } else {
-        modifyingElement = preContent;
-    }
+    let modifyingElement = preContent;
     for (let char of cleanText) {
-        switch (char) {
-            case " ":
-                if (!encounteredMinus && !encounteredSpace) {
-                    index += 1;
+        if (char === " ") {
+            if (!outsideNumber) {
+                index += 1;
 
-                    if (index > index2) {
-                        modifyingElement = postContent;
-                    } else if (index >= index1) {
-                        modifyingElement = highlightContent;
-                    }
+                if (index > index2) {
+                    // post content not needed
+                    break;
                 }
-                encounteredSpace = true;
-                encounteredMinus = false;
-                break;
-            case "-":
-                encounteredMinus = true;
-                encounteredSpace = false;
-                break;
-            default:
-                encounteredSpace = false;
-                encounteredMinus = false;
-                break;
+            }
+            outsideNumber = true;
+        } else if (char !== "-") {
+            // since the start of a chain is never minus we don't have to handle minus explicitly
+            if (outsideNumber && index == index1) {
+                modifyingElement = highlightContent;
+            }
+            outsideNumber = false;
         }
 
-        if (index === index1 && char === " ") {
-            preContent.innerText += char;
-        } else {
-            modifyingElement.innerText += char;
-        }
+        modifyingElement.innerText += char;
     }
 
-    highlight.replaceChildren(preContent, highlightContent, postContent);
+    highlight.replaceChildren(preContent, highlightContent);
 }
 
 function scrollHighlight(textArea) {

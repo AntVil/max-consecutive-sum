@@ -31,10 +31,11 @@ textarea,
 
 #highlight {
     background-color: #444;
+    white-space-collapse: preserve;
 }
 
 #highlight,
-#highlight *{
+#highlight * {
     color: transparent;
     pointer-events: none;
     user-select: none;
@@ -49,7 +50,7 @@ textarea,
     margin: 5px;
 }
 
-.highlight{
+.highlight-content {
     background-color: #AAA;
     border-radius: 3vh;
 }
