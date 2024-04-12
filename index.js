@@ -15,7 +15,7 @@ function update(textArea) {
 
     result.innerText = sum;
 
-    if(sum === 0) {
+    if (sum === BigInt(0)) {
         clearHighlight();
         return;
     }
@@ -28,91 +28,50 @@ function extractData(rawText) {
 
     let numbers = [];
 
-    let isNegative = false;
-    let number = null;
+    let numberString = "";
 
     for (let char of rawText) {
         switch (char) {
             case " ":
-                if (number !== null) {
-                    if (isNegative) {
-                        numbers.push(-number);
-                        cleanText += `-${number} `;
-                        isNegative = false;
-                    } else {
-                        numbers.push(number);
-                        cleanText += `${number} `;
-                    }
-                    number = null;
+                if (numberString !== "-" && numberString !== "") {
+                    numbers.push(BigInt(numberString));
+                    cleanText += `${numberString} `;
+                    numberString = "";
                 } else {
-                    if (isNegative) {
-                        isNegative = false;
-                        cleanText += "- ";
-                    } else {
-                        cleanText += " ";
-                    }
+                    cleanText += `${numberString} `;
+                    numberString = "";
                 }
                 break
             case "-":
-                if (number !== null) {
-                    if (isNegative) {
-                        numbers.push(-number);
-                        cleanText += `-${number}`;
-                        isNegative = false;
-                    } else {
-                        numbers.push(number);
-                        cleanText += `${number}`;
-                    }
-                    cleanText += " ";
-                    number = null;
-                    isNegative = true;
+                if (numberString === "") {
+                    numberString = "-";
+                } else if (numberString === "-") {
+                    cleanText += "- ";
                 } else {
-                    isNegative = true;
+                    numbers.push(BigInt(numberString));
+                    cleanText += `${numberString} `;
+                    numberString = "-";
                 }
                 break
             case "0":
-                if (number === null) { number = 0; } else { number = number * 10; }
-                break
             case "1":
-                if (number === null) { number = 1; } else { number = number * 10 + 1; }
-                break
             case "2":
-                if (number === null) { number = 2; } else { number = number * 10 + 2; }
-                break
             case "3":
-                if (number === null) { number = 3; } else { number = number * 10 + 3; }
-                break
             case "4":
-                if (number === null) { number = 4; } else { number = number * 10 + 4; }
-                break
             case "5":
-                if (number === null) { number = 5; } else { number = number * 10 + 5; }
-                break
             case "6":
-                if (number === null) { number = 6; } else { number = number * 10 + 6; }
-                break
             case "7":
-                if (number === null) { number = 7; } else { number = number * 10 + 7; }
-                break
             case "8":
-                if (number === null) { number = 8; } else { number = number * 10 + 8; }
-                break
             case "9":
-                if (number === null) { number = 9; } else { number = number * 10 + 9; }
-                break
+                numberString += char;
         }
     }
 
-    if (number !== null) {
-        if (isNegative) {
-            numbers.push(-number)
-            cleanText += `-${number}`;
-        } else {
-            numbers.push(number)
-            cleanText += `${number}`;
-        }
-    } else if (isNegative) {
-        cleanText += "-";
+    if (numberString !== "" && numberString !== "-") {
+        numbers.push(BigInt(numberString));
+        cleanText += numberString;
+    } else {
+        cleanText += numberString;
     }
 
     return [cleanText, numbers];
@@ -126,20 +85,21 @@ function updateText(textArea, cleanText) {
 }
 
 function calculateMaxSum(numbers) {
-    let maxSum = 0;
-    let chainSum = 0;
+    console.log(numbers)
+    let maxSum = BigInt(0);
+    let chainSum = BigInt(0);
 
     let index1 = 0;
     let index2 = 0;
     let bestIndex1 = 0;
     let bestIndex2 = 0;
-    for (let i=0;i<numbers.length;i++) {
+    for (let i = 0; i < numbers.length; i++) {
         let number = numbers[i];
 
         let nextVale = chainSum + number;
-        if(nextVale < 0) {
+        if (nextVale <= 0) {
             // start new chain
-            chainSum = 0;
+            chainSum = BigInt(0);
             index1 = i + 1;
         } else {
             // extend chain
@@ -148,7 +108,7 @@ function calculateMaxSum(numbers) {
         }
 
         // compare among best current chain
-        if(chainSum > maxSum) {
+        if (chainSum > maxSum) {
             bestIndex1 = index1;
             bestIndex2 = index2;
             maxSum = chainSum;
@@ -174,20 +134,20 @@ function updateHighlight(highlight, cleanText, index1, index2) {
     let encounteredMinus = false;
 
     let modifyingElement;
-    if(index1 === 0) {
+    if (index1 === 0) {
         modifyingElement = highlightContent;
-    }else{
+    } else {
         modifyingElement = preContent;
     }
-    for(let char of cleanText) {
+    for (let char of cleanText) {
         switch (char) {
             case " ":
-                if(!encounteredMinus && !encounteredSpace) {
+                if (!encounteredMinus && !encounteredSpace) {
                     index += 1;
 
-                    if(index > index2) {
+                    if (index > index2) {
                         modifyingElement = postContent;
-                    } else if(index >= index1) {
+                    } else if (index >= index1) {
                         modifyingElement = highlightContent;
                     }
                 }
@@ -204,9 +164,9 @@ function updateHighlight(highlight, cleanText, index1, index2) {
                 break;
         }
 
-        if(index === index1 && char === " ") {
+        if (index === index1 && char === " ") {
             preContent.innerText += char;
-        }else{
+        } else {
             modifyingElement.innerText += char;
         }
     }
